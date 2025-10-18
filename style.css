@@ -1,8 +1,10 @@
 body {
-  background-color: lightblue;
+  background-color: grey;
 }
 
 h1 {
-  color: cyan;
-  margin-left: 70px;
+  color: white;
+  margin-left: 500px;
+  margin-down: 120px;
 }
+
