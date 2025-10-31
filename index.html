@@ -411,7 +411,7 @@
                 </ul>
             </div>
             <br>
-            <h2>Типы вывода</h2>
+            <h2>Types of output</h2>
             <div class="type-info">
                 <p><strong>Bytebeat (0 to 255):</strong> Classic bytebeat, output value from 0 to 255.</p>
                 <p><strong>Floatbeat (-1 to 1):</strong> output value from -1.0 to 1.0, suitable for good quality.</p>
@@ -479,8 +479,8 @@
         const frequencies = [1000, 6000, 8000, 11025, 16000, 22050, 32000, 44100, 48000];
         const outputTypes = [
             { id: 'bytebeat', name: 'Bytebeat (0-255)' },
-            { id: 'floatbeat', name: 'Floatbeat (-1 до 1)' },
-            { id: 'signed', name: 'Signed Bytebeat (-128 до 127)' }
+            { id: 'floatbeat', name: 'Floatbeat (-1 to 1)' },
+            { id: 'signed', name: 'Signed Bytebeat (-128 to 127)' }
         ];
 
         const mathFunctions = {
@@ -601,7 +601,7 @@
                 const item = document.createElement('div');
                 item.className = 'function-item';
                 item.textContent = funcName;
-                item.title = `Вставить ${funcName}()`;
+                item.title = `Insert ${funcName}()`;
                 item.onclick = () => insertFunction(funcName);
                 container.appendChild(item);
             });
@@ -639,7 +639,7 @@
                 setTimeout(playBytebeat, 100);
             }
             
-            showStatus(`Частота установлена: ${freq} Hz`);
+            showStatus(`Rate: ${freq} Hz`);
         }
 
         function setOutputType(type) {
@@ -686,13 +686,13 @@
             
             const code = document.getElementById('codeEditor').value.trim();
             if (!code) {
-                showStatus('Введите формулу!', 'error');
+                showStatus('Enter the formula!', 'error');
                 return;
             }
 
             compiledFunction = compileCode(code);
             if (!compiledFunction) {
-                showStatus('Ошибка в формуле!', 'error');
+                showStatus('Detected error in the formula!', 'error');
                 return;
             }
 
@@ -735,7 +735,7 @@
             const targetSamplesNeeded = Math.ceil(bufferLength * ratio);
             
             for (let i = 0; i < bufferLength; i++) {
-                // Вычисляем позицию в целевом потоке семплов
+                // Calculate the position in the target sample stream
                 const targetPos = Math.floor(i * ratio);
                 const t = sampleCount + targetPos;
                 
@@ -847,12 +847,12 @@
 
         function loadPreset(presetName) {
             document.getElementById('codeEditor').value = presets[presetName];
-            showStatus(`Загружен пресет: ${presetName}`);
+            showStatus(`Loaded preset: ${presetName}`);
         }
 
         function loadExample(index) {
             document.getElementById('codeEditor').value = examples[index];
-            showStatus(`Загружен example ${index + 1}`);
+            showStatus(`Loaded example: ${index + 1}`);
         }
 
         function saveComposition() {
@@ -864,7 +864,7 @@
                 volume: volume
             };
             localStorage.setItem('bytebeatComposition', JSON.stringify(settings));
-            showStatus('Композиция сохранена!');
+            showStatus('Bytebeat saved!');
         }
 
         function shareComposition() {
@@ -876,7 +876,7 @@
             const url = new URL(window.location);
             url.searchParams.set('settings', btoa(JSON.stringify(settings)));
             navigator.clipboard.writeText(url.toString());
-            showStatus('Ссылка скопирована в буфер обмена!');
+            showStatus('Link are copied to clipboard!');
         }
 
         // Initialization
