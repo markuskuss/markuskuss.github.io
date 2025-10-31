@@ -1,13 +1,927 @@
- <!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markuskus's Bytebeat Composer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Monaco', 'Consolas', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .subtitle {
+            color: #66ff66;
+            font-size: 1.1em;
+        }
+
+        .composer {
+            background: #2a2a2a;
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .code-editor {
+            width: 100%;
+            height: 150px;
+            background: #000;
+            color: #00ff00;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #66ff66;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .stop {
+            background: #ff4444;
+            color: white;
+        }
+
+        .stop:hover {
+            background: #ff6666;
+        }
+
+        .settings {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .settings {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .setting-group {
+            background: #333;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #444;
+        }
+
+        .setting-group h3 {
+            margin-bottom: 15px;
+            color: #66ff66;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .frequency-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+        }
+
+        .type-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .freq-btn, .type-btn {
+            background: #444;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+
+        .freq-btn:hover, .type-btn:hover {
+            background: #555;
+            border-color: #00ff00;
+        }
+
+        .freq-btn.active, .type-btn.active {
+            background: #00ff00;
+            color: #000;
+            border-color: #00ff00;
+            font-weight: bold;
+        }
+
+        .presets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .preset-btn:hover {
+            background: #444;
+        }
+
+        .visualization {
+            margin-bottom: 30px;
+        }
+
+        .waveform {
+            background: #000;
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .info-panel {
+            background: #2a2a2a;
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .example {
+            background: #333;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #00ff00;
+        }
+
+        .example h3 {
+            margin-bottom: 10px;
+            color: #66ff66;
+        }
+
+        .example-code {
+            background: #000;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00ff00;
+            color: #000;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .slider-container {
+            margin: 10px 0;
+        }
+
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            color: #66ff66;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #00ff00;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .current-settings {
+            background: #333;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 4px solid #00ff00;
+        }
+
+        .current-settings span {
+            color: #66ff66;
+            font-weight: bold;
+        }
+
+        .performance-warning {
+            background: #ff6b00;
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 12px;
+            display: none;
+        }
+
+        .math-functions {
+            background: #333;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #444;
+        }
+
+        .math-functions h4 {
+            color: #66ff66;
+            margin-bottom: 10px;
+        }
+
+        .function-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 5px;
+            font-size: 11px;
+        }
+
+        .function-item {
+            padding: 3px 6px;
+            background: #444;
+            border-radius: 3px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .function-item:hover {
+            background: #555;
+        }
+    </style>
 </head>
 <body>
+    <div class="status" id="status">Playing...</div>
+    
+    <div class="container">
+        <header>
+            <h1>Markuskus's Bytebeat Composer</h1>
+            <div class="subtitle">Create algorithmic music using mathematical formulas</div>
+        </header>
 
-<h1>
-  Hello!
-</h1>
+        <div class="composer">
+            <div class="current-settings">
+                Settings: Rate: <span id="currentFreq">11025</span> Hz | Type: <span id="currentType">bytebeat</span>
+            </div>
 
+            <div class="performance-warning" id="performanceWarning">
+                ⚠️ Low frequencies may sound distorted due to resampling
+            </div>
+
+            <textarea class="code-editor" id="codeEditor" placeholder="Enter a bytebeat formula... For example: t * ((t >> 12 | t >> 8) & 63 & t >> 4)">
+(((t * (((t >> 15) ^ (t >> 12)) + 1)) | (t >> (3 + ((t >> 13) & 1)))) & 255) / 2 + ((131072 / ((t % 4096) + 20)) & 255) / 2
+            </textarea>
+            
+            <div class="controls">
+                <button onclick="playBytebeat()">▶️ Play</button>
+                <button class="stop" onclick="stopBytebeat()">⏹️ Stop</button>
+                <button onclick="saveComposition()">💾 Save</button>
+                <button onclick="shareComposition()">🔗 Share</button>
+            </div>
+
+            <div class="settings">
+                <div class="setting-group">
+                    <h3>Sample Rates</h3>
+                    <div class="frequency-buttons" id="frequencyButtons">
+                        <!-- Frequency buttons will be generated here -->
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Type of output</h3>
+                    <div class="type-buttons" id="typeButtons">
+                        <!-- Type buttons will be generated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <label for="volume">Volume: <span id="volumeValue">25%</span></label>
+                <input type="range" id="volume" min="0" max="100" value="25" oninput="updateVolume(this.value)">
+            </div>
+
+            <div class="presets">
+                <button class="preset-btn" onclick="loadPreset('melody')">Example 1</button>
+                <button class="preset-btn" onclick="loadPreset('beat')">Example 2</button>
+                <button class="preset-btn" onclick="loadPreset('noise')">Example 3</button>
+                <button class="preset-btn" onclick="loadPreset('alien')">Example 4</button>
+                <button class="preset-btn" onclick="loadPreset('chip')">Example 5</button>
+                <button class="preset-btn" onclick="loadPreset('random')">Example 6</button>
+            </div>
+        </div>
+
+        <div class="visualization">
+            <div class="waveform">
+                <canvas id="waveformCanvas"></canvas>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h2>Simplified syntax of math functions and defines</h2>
+            <div class="type-info">
+                <p>You can now use short names for mathematical functions:</p>
+                <ul>
+                    <li><code>sin(x)</code> instead of <code>Math.sin(x)</code></li>
+                    <li><code>cos(x)</code> instead of <code>Math.cos(x)</code></li>
+                    <li><code>tan(x)</code> instead of <code>Math.tan(x)</code></li>
+                    <li><code>abs(x)</code> instead of <code>Math.abs(x)</code></li>
+                    <li><code>sqrt(x)</code> instead of <code>Math.sqrt(x)</code></li>
+                    <li>and many others...</li>
+                </ul>
+            </div>
+            <br>
+            <h2>Типы вывода</h2>
+            <div class="type-info">
+                <p><strong>Bytebeat (0 to 255):</strong> Classic bytebeat, output value from 0 to 255.</p>
+                <p><strong>Floatbeat (-1 to 1):</strong> output value from -1.0 to 1.0, suitable for good quality.</p>
+                <p><strong>Signed Bytebeat (-128 to 127):</strong> Classic bytebeat, but with signed output, the output value is from -127 to 128.</p>
+            </div>
+            <br>
+            <h2>About Bytebeat</h2>
+            <p>Bytebeat is a technique for creating music using very short programs, usually a single line of code, where t is time.</p>
+            
+        </div>
+
+        <div class="examples">
+            <div class="example">
+                <h3>Bytebeat example</h3>
+                <div class="example-code">t * ((t >> 12 | t >> 8) & 63 & t >> 4)</div>
+                <button onclick="loadExample(0)">Load</button>
+            </div>
+            
+            <div class="example">
+                <h3>Floatbeat example</h3>
+                <div class="example-code">sin(t * 0.001) * 0.5 + 0.5</div>
+                <button onclick="loadExample(1)">Load</button>
+            </div>
+            
+            <div class="example">
+                <h3>Signed Bytebeat example</h3>
+                <div class="example-code">(t >> 5 | t >> 8) * ((t >> 4) & 63) - 64</div>
+                <button onclick="loadExample(2)">Load</button>
+            </div>
+            
+            <div class="example">
+                <h3>Difficult melody</h3>
+                <div class="example-code">(t >> 7 | t | t >> 6) * 10 + 4 * (t & t >> 13 | t >> 6)</div>
+                <button onclick="loadExample(3)">Load</button>
+            </div>
+
+            <div class="example">
+                <h3>Sine example</h3>
+                <div class="example-code">(sin(t * 0.001) * 64 + 128) & (t >> 4)</div>
+                <button onclick="loadExample(4)">Load</button>
+            </div>
+
+            <div class="example">
+                <h3>Exponential example</h3>
+                <div class="example-code">(t * log(t * 0.001) & 255) * sin(t * 0.0001)</div>
+                <button onclick="loadExample(5)">Load</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let audioContext = null;
+        let isPlaying = false;
+        let volume = 0.5;
+        let targetSampleRate = 11025;
+        let outputType = 'bytebeat';
+        let animationFrame = null;
+        let scriptNode = null;
+        
+        // Variables for correct timekeeping
+        let sampleCount = 0;
+        let audioContextSampleRate = 48000;
+        let startTime = 0;
+
+        const frequencies = [1000, 6000, 8000, 11025, 16000, 22050, 32000, 44100, 48000];
+        const outputTypes = [
+            { id: 'bytebeat', name: 'Bytebeat (0-255)' },
+            { id: 'floatbeat', name: 'Floatbeat (-1 до 1)' },
+            { id: 'signed', name: 'Signed Bytebeat (-128 до 127)' }
+        ];
+
+        const mathFunctions = {
+            // Trigonometric
+            'sin': 'Math.sin', 'cos': 'Math.cos', 'tan': 'Math.tan',
+            'asin': 'Math.asin', 'acos': 'Math.acos', 'atan': 'Math.atan',
+            'atan2': 'Math.atan2',
+            
+            // Hyperbolic
+            'sinh': 'Math.sinh', 'cosh': 'Math.cosh', 'tanh': 'Math.tanh',
+            'asinh': 'Math.asinh', 'acosh': 'Math.acosh', 'atanh': 'Math.atanh',
+            
+            // Exponential and logarithmic
+            'exp': 'Math.exp', 'log': 'Math.log', 'log10': 'Math.log10',
+            'log2': 'Math.log2', 'pow': 'Math.pow', 'sqrt': 'Math.sqrt',
+            
+            // Rounding and absolute value
+            'abs': 'Math.abs', 'ceil': 'Math.ceil', 'floor': 'Math.floor',
+            'round': 'Math.round', 'trunc': 'Math.trunc',
+            
+            // Minimum/maximum
+            'min': 'Math.min', 'max': 'Math.max',
+            
+            // Random numbers
+            'random': 'Math.random',
+            
+            // Constants
+            'PI': 'Math.PI', 'E': 'Math.E', 'LN2': 'Math.LN2', 'LN10': 'Math.LN10',
+            'LOG2E': 'Math.LOG2E', 'LOG10E': 'Math.LOG10E', 'SQRT2': 'Math.SQRT2'
+        };
+
+        const examples = [
+            "t * ((t >> 12 | t >> 8) & 63 & t >> 4)",
+            "sin(t * 0.001) * 0.5 + 0.5",
+            "(t >> 5 | t >> 8) * ((t >> 4) & 63) - 64",
+            "(t >> 7 | t | t >> 6) * 10 + 4 * (t & t >> 13 | t >> 6)",
+            "(sin(t * 0.001) * 64 + 128) & (t >> 4)",
+            "(t * log(t * 0.001) & 255) * sin(t * 0.0001)",
+            "sin(t * 0.0003) * sin(t * 0.0005) * 127 + 128",
+            "(t * (t >> 8 | t >> 9) & 46 & t >> 8)) ^ (t & t >> 13 | t >> 6)",
+            "abs(sin(t * 0.0007) * 128) & (t >> 5)",
+            "(pow(sin(t * 0.0002), 3) * 127 + 128) & t >> 6"
+        ];
+
+        const presets = {
+            melody: "t * ((t >> 12 | t >> 8) & 63 & t >> 4)",
+            beat: "(t >> 4) * ((t >> 10 | t >> 8) & 42 & t >> 5)",
+            noise: "(t * (t >> 5 | t >> 8)) & 255",
+            alien: "(t & 16383) * ((t >> 8 & t >> 4) ^ (t >> 2))",
+            chip: "t * (t >> 5 | t >> 8) >> (t >> 16)",
+            wave: "sin(t * 0.001) * 127 + 128",
+            random: generateRandomFormula()
+        };
+
+        let compiledFunction = null;
+
+        function compileCode(code) {
+            try {
+                // Replace short function names with full Math calls
+                let processedCode = code;
+                for (const [shortName, fullName] of Object.entries(mathFunctions)) {
+                    // Regular expression to replace function calls but not variables
+                    const regex = new RegExp(`\\b${shortName}\\(`, 'g');
+                    processedCode = processedCode.replace(regex, `${fullName}(`);
+                }
+                
+                return new Function('t', `return ${processedCode};`);
+            } catch (e) {
+                console.error('Compilation error:', e);
+                return null;
+            }
+        }
+
+        function generateRandomFormula() {
+            const operations = [
+                't', 't >> 4', 't >> 8', 't >> 12', 't * 2', 't / 3',
+                'sin(t * 0.001) * 127', 'cos(t * 0.0005) * 64',
+                'abs(t) % 256', 'sqrt(t) % 255'
+            ];
+            
+            const ops = ['&', '|', '^', '*', '+', '-'];
+            
+            let formula = operations[Math.floor(Math.random() * operations.length)];
+            for (let i = 0; i < 3; i++) {
+                const op = ops[Math.floor(Math.random() * ops.length)];
+                const operand = operations[Math.floor(Math.random() * operations.length)];
+                formula = `(${formula} ${op} ${operand})`;
+            }
+            
+            return formula + ' & 255';
+        }
+
+        function initFrequencyButtons() {
+            const container = document.getElementById('frequencyButtons');
+            frequencies.forEach(freq => {
+                const button = document.createElement('button');
+                button.className = `freq-btn ${freq === 11025 ? 'active' : ''}`;
+                button.textContent = `${freq/1000}k`;
+                button.onclick = () => setFrequency(freq);
+                container.appendChild(button);
+            });
+        }
+
+        function initTypeButtons() {
+            const container = document.getElementById('typeButtons');
+            outputTypes.forEach(type => {
+                const button = document.createElement('button');
+                button.className = `type-btn ${type.id === 'bytebeat' ? 'active' : ''}`;
+                button.textContent = type.name;
+                button.onclick = () => setOutputType(type.id);
+                container.appendChild(button);
+            });
+        }
+
+        function initFunctionList() {
+            const container = document.getElementById('functionList');
+            Object.keys(mathFunctions).forEach(funcName => {
+                const item = document.createElement('div');
+                item.className = 'function-item';
+                item.textContent = funcName;
+                item.title = `Вставить ${funcName}()`;
+                item.onclick = () => insertFunction(funcName);
+                container.appendChild(item);
+            });
+        }
+
+        function insertFunction(funcName) {
+            const editor = document.getElementById('codeEditor');
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const text = editor.value;
+            const newText = text.substring(0, start) + funcName + '()' + text.substring(end);
+            
+            editor.value = newText;
+            editor.focus();
+            editor.setSelectionRange(start + funcName.length + 1, start + funcName.length + 1);
+        }
+
+        function setFrequency(freq) {
+            targetSampleRate = freq;
+            
+            document.querySelectorAll('.freq-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(freq/1000 + 'k')) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.getElementById('currentFreq').textContent = freq;
+            
+            const warning = document.getElementById('performanceWarning');
+            warning.style.display = freq < 8000 ? 'block' : 'none';
+            
+            if (isPlaying) {
+                stopBytebeat();
+                setTimeout(playBytebeat, 100);
+            }
+            
+            showStatus(`Частота установлена: ${freq} Hz`);
+        }
+
+        function setOutputType(type) {
+            outputType = type;
+            
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(outputTypes.find(t => t.id === type).name)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.getElementById('currentType').textContent = type;
+        }
+
+        function processValue(rawValue) {
+            switch(outputType) {
+                case 'bytebeat':
+                    return ((rawValue & 255) / 255 * 2 - 1);
+                
+                case 'floatbeat':
+                    return Math.max(-1, Math.min(1, rawValue));
+                
+                case 'signed':
+                    let signedValue = Math.round(rawValue);
+                    
+                    if (signedValue < -128) {
+                        const overflow = Math.abs(signedValue + 128) - 1;
+                        signedValue = 127 - (overflow % 256);
+                    } else if (signedValue > 127) {
+                        const overflow = signedValue - 127 - 1;
+                        signedValue = -128 + (overflow % 256);
+                    }
+                    
+                    return Math.max(-1, Math.min(1, signedValue / 128));
+                
+                default:
+                    return 0;
+            }
+        }
+
+        function playBytebeat() {
+            if (isPlaying) return;
+            
+            const code = document.getElementById('codeEditor').value.trim();
+            if (!code) {
+                showStatus('Введите формулу!', 'error');
+                return;
+            }
+
+            compiledFunction = compileCode(code);
+            if (!compiledFunction) {
+                showStatus('Ошибка в формуле!', 'error');
+                return;
+            }
+
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioContextSampleRate = audioContext.sampleRate;
+            }
+
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            stopBytebeat();
+
+            isPlaying = true;
+            startTime = audioContext.currentTime;
+            sampleCount = 0;
+            
+            const bufferSize = getOptimalBufferSize();
+            scriptNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
+            scriptNode.onaudioprocess = processAudio;
+            scriptNode.connect(audioContext.destination);
+            
+            showStatus(`Playing at ${targetSampleRate}Hz`);
+            startVisualization();
+        }
+
+        function getOptimalBufferSize() {
+            if (targetSampleRate <= 8000) return 1024;
+            if (targetSampleRate <= 22050) return 2048;
+            return 4096;
+        }
+
+        function processAudio(event) {
+            const output = event.outputBuffer.getChannelData(0);
+            const bufferLength = output.length;
+            
+            // We calculate how many samples of the target frequency need to be generated
+            const ratio = targetSampleRate / audioContextSampleRate;
+            const targetSamplesNeeded = Math.ceil(bufferLength * ratio);
+            
+            for (let i = 0; i < bufferLength; i++) {
+                // Вычисляем позицию в целевом потоке семплов
+                const targetPos = Math.floor(i * ratio);
+                const t = sampleCount + targetPos;
+                
+                try {
+                    const result = compiledFunction(t);
+                    output[i] = processValue(result) * volume;
+                } catch (error) {
+                    output[i] = 0;
+                }
+            }
+            
+            // Increment the sample counter for the next buffer
+            sampleCount += targetSamplesNeeded;
+        }
+
+        function stopBytebeat() {
+            isPlaying = false;
+            sampleCount = 0;
+            
+            if (scriptNode) {
+                scriptNode.disconnect();
+                scriptNode = null;
+            }
+            
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+                animationFrame = null;
+            }
+            
+            showStatus('Stopped', 'stopped');
+            clearVisualization();
+        }
+
+        function startVisualization() {
+            const waveformCanvas = document.getElementById('waveformCanvas');
+            const waveformCtx = waveformCanvas.getContext('2d');
+            
+            waveformCanvas.width = waveformCanvas.offsetWidth;
+            waveformCanvas.height = waveformCanvas.offsetHeight;
+            
+            const bufferSize = waveformCanvas.width;
+            let waveformData = new Float32Array(bufferSize);
+            let dataIndex = 0;
+            let vizSampleCount = 0;
+
+            function draw() {
+                if (!isPlaying) return;
+                
+                waveformCtx.fillStyle = '#000';
+                waveformCtx.fillRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+                
+                waveformCtx.strokeStyle = '#00ff00';
+                waveformCtx.lineWidth = 2;
+                waveformCtx.beginPath();
+                
+                const centerY = waveformCanvas.height / 2;
+                const scaleY = waveformCanvas.height / 2;
+                
+                for (let x = 0; x < bufferSize; x++) {
+                    const y = centerY + waveformData[x] * scaleY;
+                    if (x === 0) {
+                        waveformCtx.moveTo(x, y);
+                    } else {
+                        waveformCtx.lineTo(x, y);
+                    }
+                }
+                waveformCtx.stroke();
+                
+                // Refreshing data for visualization at a target frequency
+                if (compiledFunction) {
+                    const t = vizSampleCount;
+                    try {
+                        const result = compiledFunction(t);
+                        waveformData[dataIndex] = processValue(result);
+                    } catch (e) {
+                        waveformData[dataIndex] = 0;
+                    }
+                    dataIndex = (dataIndex + 1) % bufferSize;
+                    vizSampleCount++;
+                }
+                
+                animationFrame = requestAnimationFrame(draw);
+            }
+            
+            draw();
+        }
+
+        function clearVisualization() {
+            const waveformCanvas = document.getElementById('waveformCanvas');
+            const waveformCtx = waveformCanvas.getContext('2d');
+            waveformCtx.fillStyle = '#000';
+            waveformCtx.fillRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+        }
+
+        function showStatus(message, type = 'playing') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.style.background = type === 'error' ? '#ff4444' : 
+                                   type === 'stopped' ? '#888' : '#00ff00';
+            status.style.color = type === 'error' ? 'white' : 'black';
+            status.style.display = 'block';
+            setTimeout(() => status.style.display = 'none', 3000);
+        }
+
+        function updateVolume(value) {
+            volume = value / 100;
+            document.getElementById('volumeValue').textContent = value + '%';
+        }
+
+        function loadPreset(presetName) {
+            document.getElementById('codeEditor').value = presets[presetName];
+            showStatus(`Загружен пресет: ${presetName}`);
+        }
+
+        function loadExample(index) {
+            document.getElementById('codeEditor').value = examples[index];
+            showStatus(`Загружен example ${index + 1}`);
+        }
+
+        function saveComposition() {
+            const code = document.getElementById('codeEditor').value;
+            const settings = {
+                code: code,
+                sampleRate: targetSampleRate,
+                outputType: outputType,
+                volume: volume
+            };
+            localStorage.setItem('bytebeatComposition', JSON.stringify(settings));
+            showStatus('Композиция сохранена!');
+        }
+
+        function shareComposition() {
+            const settings = {
+                code: document.getElementById('codeEditor').value,
+                sampleRate: targetSampleRate,
+                outputType: outputType
+            };
+            const url = new URL(window.location);
+            url.searchParams.set('settings', btoa(JSON.stringify(settings)));
+            navigator.clipboard.writeText(url.toString());
+            showStatus('Ссылка скопирована в буфер обмена!');
+        }
+
+        // Initialization
+        window.addEventListener('load', () => {
+            initFrequencyButtons();
+            initTypeButtons();
+            initFunctionList();
+            
+            const saved = localStorage.getItem('bytebeatComposition');
+            if (saved) {
+                try {
+                    const settings = JSON.parse(saved);
+                    document.getElementById('codeEditor').value = settings.code;
+                    if (settings.sampleRate) setFrequency(settings.sampleRate);
+                    if (settings.outputType) setOutputType(settings.outputType);
+                    if (settings.volume) {
+                        volume = settings.volume;
+                        document.getElementById('volume').value = volume * 100;
+                        document.getElementById('volumeValue').textContent = Math.round(volume * 100) + '%';
+                    }
+                } catch (e) {
+                    document.getElementById('codeEditor').value = saved;
+                }
+            }
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const settingsParam = urlParams.get('settings');
+            if (settingsParam) {
+                try {
+                    const settings = JSON.parse(atob(settingsParam));
+                    document.getElementById('codeEditor').value = settings.code;
+                    if (settings.sampleRate) setFrequency(settings.sampleRate);
+                    if (settings.outputType) setOutputType(settings.outputType);
+                } catch (e) {
+                    console.error('Invalid settings parameter');
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                playBytebeat();
+            }
+        });
+    </script>
 </body>
-</html> 
+</html>
