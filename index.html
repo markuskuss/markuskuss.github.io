@@ -405,7 +405,7 @@
                 ⚠️ Low sample rates may sound distorted due to resampling
             </div>
 
-            <textarea class="code-editor" id="codeEditor" placeholder="Enter bytebeat formula... library: t * ((t >> 12 | t >> 8) & 63 & t >> 4)">
+            <textarea class="code-editor" id="codeEditor" placeholder="Enter bytebeat formula... Example: t * ((t >> 12 | t >> 8) & 63 & t >> 4)">
 (((t * (((t >> 15) ^ (t >> 12)) + 1)) | (t >> (3 + ((t >> 13) & 1)))) & 255) / 2 + ((131072 / ((t % 4096) + 20)) & 255) / 2
 // Name: Default music
 // Author: markuskus</textarea>
