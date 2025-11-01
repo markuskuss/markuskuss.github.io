@@ -398,14 +398,14 @@
 
         <div class="composer">
             <div class="current-settings">
-                Current settings: Sample Rate: <span id="currentFreq">11025</span> Hz | Type: <span id="currentType">bytebeat</span>
+                Current settings: Sample Rate: <span id="currentFreq">11025</span> Hz | Type: <span id="currentType">byte</span>
             </div>
 
             <div class="performance-warning" id="performanceWarning">
                 ⚠️ Low sample rates may sound distorted due to resampling
             </div>
 
-            <textarea class="code-editor" id="codeEditor" placeholder="Enter bytebeat formula... Example: t * ((t >> 12 | t >> 8) & 63 & t >> 4)">
+            <textarea class="code-editor" id="codeEditor" placeholder="Enter bytebeat formula... library: t * ((t >> 12 | t >> 8) & 63 & t >> 4)">
 (((t * (((t >> 15) ^ (t >> 12)) + 1)) | (t >> (3 + ((t >> 13) & 1)))) & 255) / 2 + ((131072 / ((t % 4096) + 20)) & 255) / 2
 // Name: Default music
 // Author: markuskus</textarea>
@@ -480,14 +480,14 @@
             </div>
             
             <div class="library">
-                <h3>In development</h3>
-                <div class="library-code">// In development</div>
+                <h3>I can't believe XOR</h3>
+                <div class="library-code">(t * ((t >> (15 + ((t >> 17) & 1))) ^ ((t >> 7) & (t >> 5))))</div>
                 <button onclick="loadlibrary(1)">Load</button>
             </div>
             
             <div class="library">
-                <h3>In development</h3>
-                <div class="library-code">// In development </div>
+                <h3>Dubstp (C-Compatible ???)</h3>
+                <div class="library-code">((t>>13&t>>6|t>>10&(t&16384?5:4))*t>>7)-(t>262144?32768000+(t/512*t/20*t/81290*t...</div>
                 <button onclick="loadlibrary(2)">Load</button>
             </div>
 
@@ -502,7 +502,7 @@
         let isPlaying = false;
         let volume = 0.5;
         let targetSampleRate = 11025;
-        let outputType = 'bytebeat';
+        let outputType = 'byte';
         let animationFrame = null;
         let scriptNode = null;
         
@@ -527,8 +527,8 @@
 
         const frequencies = [1000, 6000, 8000, 11025, 16000, 22050, 32000, 44100, 48000];
         const outputTypes = [
-            { id: 'bytebeat', name: 'Bytebeat (0-255)' },
-            { id: 'floatbeat', name: 'Floatbeat (-1 to 1)' },
+            { id: 'byte', name: 'Bytebeat (0-255)' },
+            { id: 'float', name: 'Floatbeat (-1 to 1)' },
             { id: 'signed', name: 'Signed Bytebeat (-128 to 127)' }
         ];
 
@@ -549,9 +549,15 @@
             `x = t >> 8 & t >> 12, t ? (l += (x - l) / 1536) : l = 0, sin(l * 16)
 // Name: Uouououoouououou
 // Author: markuskus
-// Settings: Rate: 44100, Mode: Floatbeat`,
-            "// In development",
-            "// In development",
+// Settings: Sample Rate: 44100, Mode: Floatbeat`,
+            `(t * ((t >> (15 + ((t >> 17) & 1))) ^ ((t >> 7) & (t >> 5))))
+// Name: I can't believe XOR
+// Author: markuskus
+// Settings: Sample Rate: 8000, Mode: Bytebeat`,
+            `((t>>13&t>>6|t>>10&(t&16384?5:4))*t>>7)-(t>262144?32768000+(t/512*t/20*t/81290*t/81285/31-100000):3276800+(t/512*t/510*t/1280*t/16384/32-1000000))/(t%16384+50)/10
+// Name: Dubstp (C-Compatible ???)
+// Author: markuskus
+// Settings: Sample Rate: 44100, Mode: Bytebeat`,
             "// In development",
             "// In development",
             "// In development"
@@ -755,7 +761,7 @@
             const container = document.getElementById('typeButtons');
             outputTypes.forEach(type => {
                 const button = document.createElement('button');
-                button.className = `type-btn ${type.id === 'bytebeat' ? 'active' : ''}`;
+                button.className = `type-btn ${type.id === 'byte' ? 'active' : ''}`;
                 button.textContent = type.name;
                 button.onclick = () => setOutputType(type.id);
                 container.appendChild(button);
@@ -826,10 +832,10 @@
 
         function processValue(rawValue) {
             switch(outputType) {
-                case 'bytebeat':
+                case 'byte':
                     return ((rawValue & 255) / 255 * 2 - 1);
                 
-                case 'floatbeat':
+                case 'float':
                     return Math.max(-1, Math.min(1, rawValue));
                 
                 case 'signed':
