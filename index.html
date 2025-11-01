@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Monaco', 'Consolas', monospace;
-            background: #1a1a1a;
+            background: #070707;
             color: #00ff00;
             line-height: 1.6;
             overflow-x: hidden;
@@ -186,7 +186,7 @@
             margin-bottom: 30px;
         }
 
-        .waveform {
+        .waveform-container {
             background: #000;
             border: 1px solid #00ff00;
             border-radius: 4px;
@@ -195,9 +195,18 @@
             overflow: hidden;
         }
 
-        canvas {
+        .waveform {
             width: 100%;
             height: 100%;
+        }
+
+        .waveform-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
 
         .info-panel {
@@ -208,25 +217,25 @@
             margin-bottom: 30px;
         }
 
-        .examples {
+        .librarys {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
 
-        .example {
+        .library {
             background: #333;
             padding: 15px;
             border-radius: 4px;
             border-left: 4px solid #00ff00;
         }
 
-        .example h3 {
+        .library h3 {
             margin-bottom: 10px;
             color: #66ff66;
         }
 
-        .example-code {
+        .library-code {
             background: #000;
             padding: 10px;
             border-radius: 4px;
@@ -329,6 +338,52 @@
         .function-item:hover {
             background: #555;
         }
+
+        .viz-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .viz-btn {
+            background: #444;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .viz-btn:hover {
+            background: #555;
+            border-color: #00ff00;
+        }
+
+        .viz-btn.active {
+            background: #00ff00;
+            color: #000;
+            border-color: #00ff00;
+        }
+
+        .viz-info {
+            color: #66ff66;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .source-code {
+            color: #66ff66;
+            font-size: 12px;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .end-of-page {
+            margin-top: 25px;
+        }
     </style>
 </head>
 <body>
@@ -337,39 +392,39 @@
     <div class="container">
         <header>
             <h1>Markuskus's Bytebeat Composer</h1>
-            <div class="subtitle">Create algorithmic music using mathematical formulas</div>
+            <div class="subtitle">Fully 100 % HTML Code using embedded JavaScript and CSS.</div><br>
+            <div class="subtitle">Create algorithmic music with mathematical formulas!</div><br>
         </header>
 
         <div class="composer">
             <div class="current-settings">
-                Settings: Rate: <span id="currentFreq">11025</span> Hz | Type: <span id="currentType">bytebeat</span>
+                Current settings: Sample Rate: <span id="currentFreq">11025</span> Hz | Type: <span id="currentType">bytebeat</span>
             </div>
 
             <div class="performance-warning" id="performanceWarning">
-                ⚠️ Low frequencies may sound distorted due to resampling
+                ⚠️ Low sample rates may sound distorted due to resampling
             </div>
 
-            <textarea class="code-editor" id="codeEditor" placeholder="Enter a bytebeat formula... For example: t * ((t >> 12 | t >> 8) & 63 & t >> 4)">
+            <textarea class="code-editor" id="codeEditor" placeholder="Enter bytebeat formula... library: t * ((t >> 12 | t >> 8) & 63 & t >> 4)">
 (((t * (((t >> 15) ^ (t >> 12)) + 1)) | (t >> (3 + ((t >> 13) & 1)))) & 255) / 2 + ((131072 / ((t % 4096) + 20)) & 255) / 2
-            </textarea>
+// Name: Default music
+// Author: markuskus</textarea>
             
             <div class="controls">
                 <button onclick="playBytebeat()">▶️ Play</button>
                 <button class="stop" onclick="stopBytebeat()">⏹️ Stop</button>
-                <button onclick="saveComposition()">💾 Save</button>
-                <button onclick="shareComposition()">🔗 Share</button>
             </div>
 
             <div class="settings">
                 <div class="setting-group">
-                    <h3>Sample Rates</h3>
+                    <h3>Sample Rate</h3>
                     <div class="frequency-buttons" id="frequencyButtons">
                         <!-- Frequency buttons will be generated here -->
                     </div>
                 </div>
 
                 <div class="setting-group">
-                    <h3>Type of output</h3>
+                    <h3>Output Type</h3>
                     <div class="type-buttons" id="typeButtons">
                         <!-- Type buttons will be generated here -->
                     </div>
@@ -377,28 +432,29 @@
             </div>
 
             <div class="slider-container">
-                <label for="volume">Volume: <span id="volumeValue">25%</span></label>
-                <input type="range" id="volume" min="0" max="100" value="25" oninput="updateVolume(this.value)">
-            </div>
-
-            <div class="presets">
-                <button class="preset-btn" onclick="loadPreset('melody')">Example 1</button>
-                <button class="preset-btn" onclick="loadPreset('beat')">Example 2</button>
-                <button class="preset-btn" onclick="loadPreset('noise')">Example 3</button>
-                <button class="preset-btn" onclick="loadPreset('alien')">Example 4</button>
-                <button class="preset-btn" onclick="loadPreset('chip')">Example 5</button>
-                <button class="preset-btn" onclick="loadPreset('random')">Example 6</button>
+                <label for="volume">Volume: <span id="volumeValue">50%</span></label>
+                <input type="range" id="volume" min="0" max="100" value="50" oninput="updateVolume(this.value)">
             </div>
         </div>
 
         <div class="visualization">
-            <div class="waveform">
-                <canvas id="waveformCanvas"></canvas>
+            <div class="viz-controls">
+                <button class="viz-btn active" onclick="setVizMode('smooth')">Smooth</button>
+                <button class="viz-btn" onclick="setVizMode('digital')">Digital</button>
+                <button class="viz-btn" onclick="setVizMode('bars')">Bars</button>
+                <button class="viz-btn active" onclick="toggleGrid()">Grid</button>
+            </div>
+            <div class="waveform-container">
+                <canvas class="waveform" id="waveformCanvas"></canvas>
+                <canvas class="waveform-grid" id="gridCanvas"></canvas>
+            </div>
+            <div class="viz-info" id="vizInfo">
+                Visualization speed: <span id="vizSpeed">60</span> FPS | Decimation: 1:1
             </div>
         </div>
 
         <div class="info-panel">
-            <h2>Simplified syntax of math functions and defines</h2>
+            <h2>Simplified Syntax of math function and defines</h2>
             <div class="type-info">
                 <p>You can now use short names for mathematical functions:</p>
                 <ul>
@@ -409,58 +465,37 @@
                     <li><code>sqrt(x)</code> instead of <code>Math.sqrt(x)</code></li>
                     <li>and many others...</li>
                 </ul>
-            </div>
-            <br>
-            <h2>Types of output</h2>
-            <div class="type-info">
-                <p><strong>Bytebeat (0 to 255):</strong> Classic bytebeat, output value from 0 to 255.</p>
-                <p><strong>Floatbeat (-1 to 1):</strong> output value from -1.0 to 1.0, suitable for good quality.</p>
-                <p><strong>Signed Bytebeat (-128 to 127):</strong> Classic bytebeat, but with signed output, the output value is from -127 to 128.</p>
-            </div>
-            <br>
-            <h2>About Bytebeat</h2>
-            <p>Bytebeat is a technique for creating music using very short programs, usually a single line of code, where t is time.</p>
-            
-        </div>
-
-        <div class="examples">
-            <div class="example">
-                <h3>Bytebeat example</h3>
-                <div class="example-code">t * ((t >> 12 | t >> 8) & 63 & t >> 4)</div>
-                <button onclick="loadExample(0)">Load</button>
-            </div>
-            
-            <div class="example">
-                <h3>Floatbeat example</h3>
-                <div class="example-code">sin(t * 0.001) * 0.5 + 0.5</div>
-                <button onclick="loadExample(1)">Load</button>
-            </div>
-            
-            <div class="example">
-                <h3>Signed Bytebeat example</h3>
-                <div class="example-code">(t >> 5 | t >> 8) * ((t >> 4) & 63) - 64</div>
-                <button onclick="loadExample(2)">Load</button>
-            </div>
-            
-            <div class="example">
-                <h3>Difficult melody</h3>
-                <div class="example-code">(t >> 7 | t | t >> 6) * 10 + 4 * (t & t >> 13 | t >> 6)</div>
-                <button onclick="loadExample(3)">Load</button>
-            </div>
-
-            <div class="example">
-                <h3>Sine example</h3>
-                <div class="example-code">(sin(t * 0.001) * 64 + 128) & (t >> 4)</div>
-                <button onclick="loadExample(4)">Load</button>
-            </div>
-
-            <div class="example">
-                <h3>Exponential example</h3>
-                <div class="example-code">(t * log(t * 0.001) & 255) * sin(t * 0.0001)</div>
-                <button onclick="loadExample(5)">Load</button>
+                <br><br>
+                <p>About bytebeat: <br><br>
+                Bytebeat music (or one-liner music) was invented in September 2011. They're generally a piece of rhythmic and somewhat melodic music with no score, no instruments, and no real oscillators. It's simply a single-line formula that defines a waveform as a function of time, processed (usually) 8000 times per second, resulting in an audible waveform with a 256-step resolution from silence (0) to full amplitude (256). If you put that formula into a program with a loop that increments time variable (t), you can generate the headerless unsigned 8 bit mono 8kHz audio stream on output, like in this application. Since these directly output a waveform, they have great performance in compiled languages and can often be ran on even the weakest embedded devices.<br><br>This website is a non-live editor of bytebeat.<br><br>To play the bytebeat you need to click the play button, then select the sample rate that you want.</p>
             </div>
         </div>
-    </div>
+
+        <div class="librarys">
+
+            <div class="library">
+                <h3>Uouououoouououou</h3>
+                <div class="library-code">x = t >> 8 & t >> 12, t ? (l += (x - l) / 1536) : l = 0, sin(l * 16)</div>
+                <button onclick="loadlibrary(0)">Load</button>
+            </div>
+            
+            <div class="library">
+                <h3>In development</h3>
+                <div class="library-code">// In development</div>
+                <button onclick="loadlibrary(1)">Load</button>
+            </div>
+            
+            <div class="library">
+                <h3>In development</h3>
+                <div class="library-code">// In development </div>
+                <button onclick="loadlibrary(2)">Load</button>
+            </div>
+
+        </div>
+        <div class="source-code">
+            <a href='https://github.com/markuskuss/markuskuss.github.io'>Source code</a>
+        </div>
+        <div class="end-of-page"></div>
 
     <script>
         let audioContext = null;
@@ -471,10 +506,24 @@
         let animationFrame = null;
         let scriptNode = null;
         
-        // Variables for correct timekeeping
+        // Variables for proper time tracking
         let sampleCount = 0;
         let audioContextSampleRate = 48000;
         let startTime = 0;
+
+        // Visualization settings
+        let vizMode = 'smooth'; // 'smooth', 'digital', 'bars'
+        let showGrid = true;
+        let waveformData = new Float32Array(1024); // Circular buffer
+        let dataIndex = 0;
+        let vizSampleCount = 0;
+        let lastVizTime = 0;
+        let frameCount = 0;
+        let fps = 0;
+
+        // Adaptive decimation
+        let decimationRatio = 1;
+        let samplesSinceLastViz = 0;
 
         const frequencies = [1000, 6000, 8000, 11025, 16000, 22050, 32000, 44100, 48000];
         const outputTypes = [
@@ -484,69 +533,39 @@
         ];
 
         const mathFunctions = {
-            // Trigonometric
             'sin': 'Math.sin', 'cos': 'Math.cos', 'tan': 'Math.tan',
             'asin': 'Math.asin', 'acos': 'Math.acos', 'atan': 'Math.atan',
-            'atan2': 'Math.atan2',
-            
-            // Hyperbolic
             'sinh': 'Math.sinh', 'cosh': 'Math.cosh', 'tanh': 'Math.tanh',
-            'asinh': 'Math.asinh', 'acosh': 'Math.acosh', 'atanh': 'Math.atanh',
-            
-            // Exponential and logarithmic
             'exp': 'Math.exp', 'log': 'Math.log', 'log10': 'Math.log10',
             'log2': 'Math.log2', 'pow': 'Math.pow', 'sqrt': 'Math.sqrt',
-            
-            // Rounding and absolute value
             'abs': 'Math.abs', 'ceil': 'Math.ceil', 'floor': 'Math.floor',
             'round': 'Math.round', 'trunc': 'Math.trunc',
-            
-            // Minimum/maximum
             'min': 'Math.min', 'max': 'Math.max',
-            
-            // Random numbers
             'random': 'Math.random',
-            
-            // Constants
-            'PI': 'Math.PI', 'E': 'Math.E', 'LN2': 'Math.LN2', 'LN10': 'Math.LN10',
-            'LOG2E': 'Math.LOG2E', 'LOG10E': 'Math.LOG10E', 'SQRT2': 'Math.SQRT2'
+            'PI': 'Math.PI', 'E': 'Math.E'
         };
 
-        const examples = [
-            "t * ((t >> 12 | t >> 8) & 63 & t >> 4)",
-            "sin(t * 0.001) * 0.5 + 0.5",
-            "(t >> 5 | t >> 8) * ((t >> 4) & 63) - 64",
-            "(t >> 7 | t | t >> 6) * 10 + 4 * (t & t >> 13 | t >> 6)",
-            "(sin(t * 0.001) * 64 + 128) & (t >> 4)",
-            "(t * log(t * 0.001) & 255) * sin(t * 0.0001)",
-            "sin(t * 0.0003) * sin(t * 0.0005) * 127 + 128",
-            "(t * (t >> 8 | t >> 9) & 46 & t >> 8)) ^ (t & t >> 13 | t >> 6)",
-            "abs(sin(t * 0.0007) * 128) & (t >> 5)",
-            "(pow(sin(t * 0.0002), 3) * 127 + 128) & t >> 6"
+        const librarys = [
+            `x = t >> 8 & t >> 12, t ? (l += (x - l) / 1536) : l = 0, sin(l * 16)
+// Name: Uouououoouououou
+// Author: markuskus
+// Settings: Rate: 44100, Mode: Floatbeat`,
+            "// In development",
+            "// In development",
+            "// In development",
+            "// In development",
+            "// In development"
         ];
-
-        const presets = {
-            melody: "t * ((t >> 12 | t >> 8) & 63 & t >> 4)",
-            beat: "(t >> 4) * ((t >> 10 | t >> 8) & 42 & t >> 5)",
-            noise: "(t * (t >> 5 | t >> 8)) & 255",
-            alien: "(t & 16383) * ((t >> 8 & t >> 4) ^ (t >> 2))",
-            chip: "t * (t >> 5 | t >> 8) >> (t >> 16)",
-            wave: "sin(t * 0.001) * 127 + 128",
-            random: generateRandomFormula()
-        };
 
         let compiledFunction = null;
 
         function compileCode(code) {
             try {
-                // Replace short function names with full Math calls
                 let processedCode = code;
                 for (const [shortName, fullName] of Object.entries(mathFunctions)) {
-                    // Regular expression to replace function calls but not variables
                     const regex = new RegExp(`\\b${shortName}\\(`, 'g');
                     processedCode = processedCode.replace(regex, `${fullName}(`);
                 }
-                
                 return new Function('t', `return ${processedCode};`);
             } catch (e) {
                 console.error('Compilation error:', e);
@@ -554,23 +573,171 @@
             }
         }
 
-        function generateRandomFormula() {
-            const operations = [
-                't', 't >> 4', 't >> 8', 't >> 12', 't * 2', 't / 3',
-                'sin(t * 0.001) * 127', 'cos(t * 0.0005) * 64',
-                'abs(t) % 256', 'sqrt(t) % 255'
-            ];
+        // Function to calculate adaptive decimation
+        function calculateDecimationRatio() {
+            if (targetSampleRate <= 8000) return 1;
+            if (targetSampleRate <= 16000) return 2;
+            if (targetSampleRate <= 32000) return 4;
+            if (targetSampleRate <= 48000) return 6;
+            return 8;
+        }
+
+        // Optimized visualization functions
+        function drawWaveform() {
+            const canvas = document.getElementById('waveformCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerY = height / 2;
             
-            const ops = ['&', '|', '^', '*', '+', '-'];
+            // Clear canvas
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
             
-            let formula = operations[Math.floor(Math.random() * operations.length)];
-            for (let i = 0; i < 3; i++) {
-                const op = ops[Math.floor(Math.random() * ops.length)];
-                const operand = operations[Math.floor(Math.random() * operations.length)];
-                formula = `(${formula} ${op} ${operand})`;
+            // Style settings
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 2;
+            ctx.fillStyle = '#00ff00';
+            
+            switch(vizMode) {
+                case 'smooth':
+                    drawSmoothWaveform(ctx, width, height, centerY);
+                    break;
+                case 'digital':
+                    drawDigitalWaveform(ctx, width, height, centerY);
+                    break;
+                case 'bars':
+                    drawBarsWaveform(ctx, width, height, centerY);
+                    break;
+            }
+        }
+
+        function drawSmoothWaveform(ctx, width, height, centerY) {
+            ctx.beginPath();
+            const scaleY = height / 2 * 0.9;
+            
+            // Use only available data from buffer
+            const availableData = Math.min(width, waveformData.length);
+            const step = Math.max(1, Math.floor(availableData / width));
+            
+            for (let x = 0; x < availableData; x += step) {
+                // Get data from circular buffer
+                const bufferIndex = (dataIndex + x) % waveformData.length;
+                const value = waveformData[bufferIndex] || 0;
+                const canvasX = (x / availableData) * width;
+                const y = centerY + value * scaleY;
+                
+                if (x === 0) {
+                    ctx.moveTo(canvasX, y);
+                } else {
+                    ctx.lineTo(canvasX, y);
+                }
+            }
+            ctx.stroke();
+        }
+
+        function drawDigitalWaveform(ctx, width, height, centerY) {
+            const scaleY = height / 2 * 0.9;
+            const availableData = Math.min(width, waveformData.length);
+            const step = Math.max(1, Math.floor(availableData / 200));
+            
+            ctx.beginPath();
+            for (let x = 0; x < availableData; x += step) {
+                const bufferIndex = (dataIndex + x) % waveformData.length;
+                const value = waveformData[bufferIndex] || 0;
+                const canvasX = (x / availableData) * width;
+                const y = centerY + value * scaleY;
+                
+                if (x === 0) {
+                    ctx.moveTo(canvasX, y);
+                } else {
+                    ctx.lineTo(canvasX, y);
+                    ctx.lineTo(canvasX + (step / availableData) * width, y);
+                }
+            }
+            ctx.stroke();
+        }
+
+        function drawBarsWaveform(ctx, width, height, centerY) {
+            const scaleY = height / 2 * 0.9;
+            const availableData = Math.min(width, waveformData.length);
+            const barSpacing = Math.max(1, Math.floor(availableData / 100));
+            
+            for (let x = 0; x < availableData; x += barSpacing) {
+                const bufferIndex = (dataIndex + x) % waveformData.length;
+                const value = waveformData[bufferIndex] || 0;
+                const canvasX = (x / availableData) * width;
+                const barWidth = (barSpacing / availableData) * width * 0.8;
+                const barHeight = Math.abs(value) * scaleY;
+                const y = value > 0 ? centerY - barHeight : centerY;
+                
+                ctx.fillRect(canvasX, y, barWidth, barHeight);
+            }
+        }
+
+        function drawGrid() {
+            if (!showGrid) return;
+            
+            const canvas = document.getElementById('gridCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            ctx.strokeStyle = '#003300';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#003300';
+            
+            // Vertical lines (time)
+            const timeDivisions = 8;
+            for (let i = 1; i < timeDivisions; i++) {
+                const x = (width / timeDivisions) * i;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
             }
             
-            return formula + ' & 255';
+            // Horizontal lines (amplitude)
+            const ampDivisions = 4;
+            for (let i = 1; i < ampDivisions; i++) {
+                const y = (height / ampDivisions) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+            
+            // Center line
+            ctx.strokeStyle = '#006600';
+            ctx.beginPath();
+            ctx.moveTo(0, height / 2);
+            ctx.lineTo(width, height / 2);
+            ctx.stroke();
+        }
+
+        function setVizMode(mode) {
+            vizMode = mode;
+            
+            // Update buttons
+            document.querySelectorAll('.viz-btn').forEach(btn => {
+                if (btn.textContent !== 'Grid') {
+                    btn.classList.remove('active');
+                }
+            });
+            event.target.classList.add('active');
+        }
+
+        function toggleGrid() {
+            showGrid = !showGrid;
+            drawGrid();
+            event.target.classList.toggle('active');
+        }
+
+        function updateVizInfo() {
+            const decimationText = decimationRatio === 1 ? '1:1' : `1:${decimationRatio}`;
+            document.getElementById('vizInfo').innerHTML = 
+                `Visualization speed: <span id="vizSpeed">${Math.round(fps)}</span> FPS | Decimation: ${decimationText}`;
         }
 
         function initFrequencyButtons() {
@@ -621,6 +788,7 @@
 
         function setFrequency(freq) {
             targetSampleRate = freq;
+            decimationRatio = calculateDecimationRatio();
             
             document.querySelectorAll('.freq-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -636,10 +804,11 @@
             
             if (isPlaying) {
                 stopBytebeat();
-                setTimeout(playBytebeat, 100);
+                setTimeout(playBytebeat, 0);
             }
             
-            showStatus(`Rate: ${freq} Hz`);
+            updateVizInfo();
+            showStatus(`Sample rate set: ${freq} Hz`);
         }
 
         function setOutputType(type) {
@@ -686,13 +855,13 @@
             
             const code = document.getElementById('codeEditor').value.trim();
             if (!code) {
-                showStatus('Enter the formula!', 'error');
+                showStatus('Enter a formula!', 'error');
                 return;
             }
 
             compiledFunction = compileCode(code);
             if (!compiledFunction) {
-                showStatus('Detected error in the formula!', 'error');
+                showStatus('Formula error!', 'error');
                 return;
             }
 
@@ -710,14 +879,45 @@
             isPlaying = true;
             startTime = audioContext.currentTime;
             sampleCount = 0;
+            vizSampleCount = 0;
+            samplesSinceLastViz = 0;
+            lastVizTime = performance.now();
+            frameCount = 0;
+            fps = 0;
+            
+            // Initialize waveform data
+            waveformData = new Float32Array(1024);
+            dataIndex = 0;
+            
+            // Calculate decimation for current frequency
+            decimationRatio = calculateDecimationRatio();
             
             const bufferSize = getOptimalBufferSize();
             scriptNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
             scriptNode.onaudioprocess = processAudio;
             scriptNode.connect(audioContext.destination);
             
+            // Initialize canvas
+            initCanvas();
+            
             showStatus(`Playing at ${targetSampleRate}Hz`);
             startVisualization();
+        }
+
+        function initCanvas() {
+            const waveformCanvas = document.getElementById('waveformCanvas');
+            const gridCanvas = document.getElementById('gridCanvas');
+            const container = document.querySelector('.waveform-container');
+            
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            waveformCanvas.width = width;
+            waveformCanvas.height = height;
+            gridCanvas.width = width;
+            gridCanvas.height = height;
+            
+            drawGrid();
         }
 
         function getOptimalBufferSize() {
@@ -730,30 +930,37 @@
             const output = event.outputBuffer.getChannelData(0);
             const bufferLength = output.length;
             
-            // We calculate how many samples of the target frequency need to be generated
             const ratio = targetSampleRate / audioContextSampleRate;
             const targetSamplesNeeded = Math.ceil(bufferLength * ratio);
             
             for (let i = 0; i < bufferLength; i++) {
-                // Calculate the position in the target sample stream
                 const targetPos = Math.floor(i * ratio);
                 const t = sampleCount + targetPos;
                 
                 try {
                     const result = compiledFunction(t);
-                    output[i] = processValue(result) * volume;
+                    const processedValue = processValue(result);
+                    output[i] = processedValue * volume;
+                    
+                    // Adaptive buffer writing for visualization
+                    samplesSinceLastViz++;
+                    if (samplesSinceLastViz >= decimationRatio) {
+                        waveformData[dataIndex] = processedValue;
+                        dataIndex = (dataIndex + 1) % waveformData.length;
+                        samplesSinceLastViz = 0;
+                    }
                 } catch (error) {
                     output[i] = 0;
                 }
             }
             
-            // Increment the sample counter for the next buffer
             sampleCount += targetSamplesNeeded;
         }
 
         function stopBytebeat() {
             isPlaying = false;
             sampleCount = 0;
+            vizSampleCount = 0;
             
             if (scriptNode) {
                 scriptNode.disconnect();
@@ -770,53 +977,20 @@
         }
 
         function startVisualization() {
-            const waveformCanvas = document.getElementById('waveformCanvas');
-            const waveformCtx = waveformCanvas.getContext('2d');
-            
-            waveformCanvas.width = waveformCanvas.offsetWidth;
-            waveformCanvas.height = waveformCanvas.offsetHeight;
-            
-            const bufferSize = waveformCanvas.width;
-            let waveformData = new Float32Array(bufferSize);
-            let dataIndex = 0;
-            let vizSampleCount = 0;
-
             function draw() {
                 if (!isPlaying) return;
                 
-                waveformCtx.fillStyle = '#000';
-                waveformCtx.fillRect(0, 0, waveformCanvas.width, waveformCanvas.height);
-                
-                waveformCtx.strokeStyle = '#00ff00';
-                waveformCtx.lineWidth = 2;
-                waveformCtx.beginPath();
-                
-                const centerY = waveformCanvas.height / 2;
-                const scaleY = waveformCanvas.height / 2;
-                
-                for (let x = 0; x < bufferSize; x++) {
-                    const y = centerY + waveformData[x] * scaleY;
-                    if (x === 0) {
-                        waveformCtx.moveTo(x, y);
-                    } else {
-                        waveformCtx.lineTo(x, y);
-                    }
-                }
-                waveformCtx.stroke();
-                
-                // Refreshing data for visualization at a target frequency
-                if (compiledFunction) {
-                    const t = vizSampleCount;
-                    try {
-                        const result = compiledFunction(t);
-                        waveformData[dataIndex] = processValue(result);
-                    } catch (e) {
-                        waveformData[dataIndex] = 0;
-                    }
-                    dataIndex = (dataIndex + 1) % bufferSize;
-                    vizSampleCount++;
+                // Calculate FPS
+                frameCount++;
+                const now = performance.now();
+                if (now - lastVizTime >= 1000) {
+                    fps = (frameCount * 1000) / (now - lastVizTime);
+                    frameCount = 0;
+                    lastVizTime = now;
+                    updateVizInfo();
                 }
                 
+                drawWaveform();
                 animationFrame = requestAnimationFrame(draw);
             }
             
@@ -825,9 +999,9 @@
 
         function clearVisualization() {
             const waveformCanvas = document.getElementById('waveformCanvas');
-            const waveformCtx = waveformCanvas.getContext('2d');
-            waveformCtx.fillStyle = '#000';
-            waveformCtx.fillRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+            const ctx = waveformCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, waveformCanvas.width, waveformCanvas.height);
         }
 
         function showStatus(message, type = 'playing') {
@@ -845,38 +1019,9 @@
             document.getElementById('volumeValue').textContent = value + '%';
         }
 
-        function loadPreset(presetName) {
-            document.getElementById('codeEditor').value = presets[presetName];
-            showStatus(`Loaded preset: ${presetName}`);
-        }
-
-        function loadExample(index) {
-            document.getElementById('codeEditor').value = examples[index];
-            showStatus(`Loaded example: ${index + 1}`);
-        }
-
-        function saveComposition() {
-            const code = document.getElementById('codeEditor').value;
-            const settings = {
-                code: code,
-                sampleRate: targetSampleRate,
-                outputType: outputType,
-                volume: volume
-            };
-            localStorage.setItem('bytebeatComposition', JSON.stringify(settings));
-            showStatus('Bytebeat saved!');
-        }
-
-        function shareComposition() {
-            const settings = {
-                code: document.getElementById('codeEditor').value,
-                sampleRate: targetSampleRate,
-                outputType: outputType
-            };
-            const url = new URL(window.location);
-            url.searchParams.set('settings', btoa(JSON.stringify(settings)));
-            navigator.clipboard.writeText(url.toString());
-            showStatus('Link are copied to clipboard!');
+        function loadlibrary(index) {
+            document.getElementById('codeEditor').value = librarys[index];
+            showStatus(`Loaded library ${index + 1}`);
         }
 
         // Initialization
@@ -884,6 +1029,7 @@
             initFrequencyButtons();
             initTypeButtons();
             initFunctionList();
+            initCanvas();
             
             const saved = localStorage.getItem('bytebeatComposition');
             if (saved) {
@@ -901,20 +1047,9 @@
                     document.getElementById('codeEditor').value = saved;
                 }
             }
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const settingsParam = urlParams.get('settings');
-            if (settingsParam) {
-                try {
-                    const settings = JSON.parse(atob(settingsParam));
-                    document.getElementById('codeEditor').value = settings.code;
-                    if (settings.sampleRate) setFrequency(settings.sampleRate);
-                    if (settings.outputType) setOutputType(settings.outputType);
-                } catch (e) {
-                    console.error('Invalid settings parameter');
-                }
-            }
         });
+
+        window.addEventListener('resize', initCanvas);
 
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
